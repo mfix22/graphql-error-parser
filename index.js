@@ -1,12 +1,12 @@
 const morph = require('morphmorph')
 
-const extract = err => {
+const extract = message => {
   // Matches: `field "<fieldName"`
   const extractFieldsRex = `field "(\\w+)"`
   // Matches: `Expected "<field>", found <value>.<message>`
   const extractValuesRex = `Expected (type.)*"(.+?)", found (.+?)(\\.|:).{0,1}(.*)`
 
-  const lines = err.message.split('\n')
+  const lines = message.split('\n')
   const fields = lines
     .map(line => line.match(new RegExp(extractFieldsRex, 'g')))
     .filter(i => i)
