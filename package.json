@@ -1,0 +1,17 @@
+{
+  "name": "graphql-error-parser",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "mfix22",
+  "license": "MIT",
+  "dependencies": {
+    "morphmorph": "0.0.2"
+  },
+  "devDependencies": {
+    "jest": "^21.0.1"
+  }
+}
