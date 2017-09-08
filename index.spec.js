@@ -19,4 +19,8 @@ describe('Extract Errors', () => {
     const {address} = extractFields(err)
     expect(address.city).toBeUndefined()
   })
+
+  it('should allow null values to be passed', () => {
+    expect(extractFields()).toEqual({})
+  })
 })

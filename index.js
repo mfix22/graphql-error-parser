@@ -1,6 +1,6 @@
 const morph = require('morphmorph')
 
-const extract = message => {
+const extract = (message = '') => {
   // Matches: `field "<fieldName"`
   const extractFieldsRex = `field "(\\w+)"`
   // Matches: `Expected "<field>", found <value>.<message>`
