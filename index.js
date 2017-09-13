@@ -5,16 +5,24 @@ const {
   capture,
   extra,
   wildcard,
-  matchers,
-  repeat
+  matchers: {
+    ANY,
+    LAZY,
+    WORD
+  },
+  repeat,
+  regex,
+  flags: {
+    GLOBAL
+  }
 } = require('rexrex')
 
 const quote = word => `"${word}"`
 
 // Matches: `field "<fieldName"`
-const extractFieldsRex = and('field ', quote(capture(extra(matchers.WORD))))
+const extractFieldsRex = and('field ', quote(capture(extra(WORD))))
 
-const anyLazy = capture(extra(matchers.ANY, matchers.LAZY))
+const anyLazy = capture(extra(ANY, LAZY))
 // Matches: `Expected "<field>", found <value>.<message>`
 const extractValuesRex = and(
   'Expected ',
@@ -23,21 +31,21 @@ const extractValuesRex = and(
   ', found ',
   anyLazy,
   capture(or('\\.', ':')),
-  repeat(matchers.ANY, 0, 1),
-  capture(wildcard(matchers.ANY))
+  repeat(ANY, 0, 1),
+  capture(wildcard(ANY))
 )
 
 const extract = (message = '') => {
   const lines = message.split('\n')
   const fields = lines
-    .map(line => line.match(new RegExp(extractFieldsRex, 'g')))
+    .map(line => line.match(regex(extractFieldsRex, GLOBAL)))
     .filter(i => i)
     .map(m =>
       m.map(v => RegExp(extractFieldsRex).exec(v))
        .map(v => v[1]))
 
   const values = lines
-    .map(line => line.match(new RegExp(extractValuesRex, 'g')))
+    .map(line => line.match(regex(extractValuesRex, GLOBAL)))
     .filter(i => i)
     .map(m => RegExp(extractValuesRex).exec(m))
     .filter(i => i)
@@ -46,7 +54,8 @@ const extract = (message = '') => {
       message: v[5]
     }))
 
-  return fields.reduce((accum, key, i) => morph.assign(key.join('.'))(accum, values[i]), {})
+  return fields.reduce((accum, key, i) =>
+    morph.assign(key.join('.'))(accum, values[i]), {})
 }
 
 module.exports = exports.default = extract
