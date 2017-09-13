@@ -1,11 +1,33 @@
 const morph = require('morphmorph')
+const {
+  and,
+  or,
+  capture,
+  extra,
+  wildcard,
+  matchers,
+  repeat
+} = require('rexrex')
+
+const quote = word => `"${word}"`
+
+// Matches: `field "<fieldName"`
+const extractFieldsRex = and('field ', quote(capture(extra(matchers.WORD))))
+
+const anyLazy = capture(extra(matchers.ANY, matchers.LAZY))
+// Matches: `Expected "<field>", found <value>.<message>`
+const extractValuesRex = and(
+  'Expected ',
+  wildcard(capture('type.')),
+  quote(anyLazy),
+  ', found ',
+  anyLazy,
+  capture(or('\\.', ':')),
+  repeat(matchers.ANY, 0, 1),
+  capture(wildcard(matchers.ANY))
+)
 
 const extract = (message = '') => {
-  // Matches: `field "<fieldName"`
-  const extractFieldsRex = `field "(\\w+)"`
-  // Matches: `Expected "<field>", found <value>.<message>`
-  const extractValuesRex = `Expected (type.)*"(.+?)", found (.+?)(\\.|:).{0,1}(.*)`
-
   const lines = message.split('\n')
   const fields = lines
     .map(line => line.match(new RegExp(extractFieldsRex, 'g')))
